@@ -7,8 +7,9 @@
 }
 
 body {
+    background-image: url("mj.jpg");
     font-family: "Roboto", sans-serif;
-    background: linear-gradient(135deg, #323092 0%, #1a1a4a 100%);
+    background: (135deg, #32309200 0%, #1a1a4a00 100%);
     min-height: 100vh;
     display: flex;
     justify-content: center;
