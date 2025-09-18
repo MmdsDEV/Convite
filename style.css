@@ -43,7 +43,6 @@ body {
     user-select: none;
 }
 
-.envelope:hover,
 .envelope.open {
     transform: translateY(-5px);
 }
@@ -57,10 +56,8 @@ body {
     border-bottom: 125px solid #a58bd6;
     border-left: 150px solid #b19cdf;
     z-index: 0;
-    transition: opacity 0.5s;
 }
 
-.envelope:hover::after,
 .envelope.open::after {
     opacity: 0;
     transition: opacity 0.5s;
@@ -88,7 +85,6 @@ body {
     overflow: hidden;
 }
 
-.envelope:hover .card,
 .envelope.open .card {
     transform: rotateY(-15deg);
     transition-delay: 1750ms;
@@ -108,7 +104,6 @@ body {
     will-change: transform;
 }
 
-.envelope:hover .card-cover,
 .envelope.open .card-cover {
     transform: rotateY(-135deg);
     transition-delay: 2250ms;
@@ -234,14 +229,12 @@ body {
     border-radius: 4px 4px 0 0;
 }
 
-.envelope:hover .envelope-lid-secondary,
 .envelope.open .envelope-lid-secondary {
     transform: rotateX(180deg);
     transition-delay: 100ms;
     animation: open-lid-stacking 500ms forwards;
 }
 
-.envelope:not(:hover) .envelope-lid-secondary,
 .envelope:not(.open) .envelope-lid-secondary {
     animation: close-lid-stacking 1250ms forwards;
 }
@@ -280,19 +273,16 @@ body {
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
-.envelope:hover .heart-seal,
 .envelope.open .heart-seal {
     opacity: 0;
     transition-delay: 500ms;
 }
 
 /* Animations */
-.envelope:hover .card-wrapper,
 .envelope.open .card-wrapper {
     animation: show-card 1000ms 600ms forwards;
 }
 
-.envelope:not(:hover) .card-wrapper,
 .envelope:not(.open) .card-wrapper {
     animation: hide-card 1000ms forwards;
 }
@@ -351,17 +341,6 @@ body {
 .card-body::-webkit-scrollbar-thumb {
     background: #9370db;
     border-radius: 10px;
-}
-
-/* Melhorias para toque em dispositivos móveis */
-@media (hover: none) {
-    .envelope {
-        cursor: default;
-    }
-    
-    .instructions {
-        content: "• Toque para abrir a carta";
-    }
 }
 
 /* Responsividade para dispositivos móveis */
