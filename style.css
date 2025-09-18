@@ -56,19 +56,25 @@ body {
     border-bottom: 125px solid #a58bd6;
     border-left: 150px solid #b19cdf;
     z-index: 0;
+    transition: opacity 0.5s;
 }
 
 .envelope.open::after {
     opacity: 0;
-    transition: opacity 0.5s;
 }
 
 .card-wrapper {
     perspective: 1000px;
-    transform: rotate(-90deg);
+    transform: rotate(-90deg) translateY(0);
     z-index: 2;
     position: relative;
     will-change: transform;
+    transition: transform 1000ms;
+}
+
+.envelope.open .card-wrapper {
+    transform: translateY(-180px) rotate(0deg);
+    transition-delay: 600ms;
 }
 
 .card {
@@ -79,7 +85,7 @@ body {
     border: 1px solid #d1c4e9;
     transform-style: preserve-3d;
     will-change: transform;
-    transition: transform 250ms;
+    transition: transform 250ms 1750ms;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
     overflow: hidden;
@@ -87,7 +93,6 @@ body {
 
 .envelope.open .card {
     transform: rotateY(-15deg);
-    transition-delay: 1750ms;
 }
 
 /* Card cover styling */
@@ -98,7 +103,7 @@ body {
     outline: 1px solid #d1c4e9;
     transform-style: preserve-3d;
     transform-origin: left;
-    transition: transform 500ms 0ms;
+    transition: transform 500ms;
     border-radius: 8px;
     overflow: hidden;
     will-change: transform;
@@ -223,7 +228,7 @@ body {
 .envelope-lid-secondary {
     background: linear-gradient(to bottom, #8c7bd4, #6a52b3);
     clip-path: polygon(50% 38%, 0 0, 100% 0);
-    transition: transform 500ms 1000ms;
+    transition: transform 500ms;
     transform-origin: top;
     z-index: 1;
     border-radius: 4px 4px 0 0;
@@ -232,30 +237,7 @@ body {
 .envelope.open .envelope-lid-secondary {
     transform: rotateX(180deg);
     transition-delay: 100ms;
-    animation: open-lid-stacking 500ms forwards;
-}
-
-.envelope:not(.open) .envelope-lid-secondary {
-    animation: close-lid-stacking 1250ms forwards;
-}
-
-@keyframes open-lid-stacking {
-    50% {
-        z-index: 1;
-    }
-    100% {
-        z-index: -1;
-    }
-}
-
-@keyframes close-lid-stacking {
-    0%,
-    50% {
-        z-index: -2;
-    }
-    100% {
-        z-index: 1;
-    }
+    z-index: -1;
 }
 
 /* Heart Seal */
@@ -269,52 +251,13 @@ body {
     background: url("mjlogo.png") center/contain no-repeat;
     z-index: 3;
     opacity: 1;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.5s ease 500ms;
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
 }
 
 .envelope.open .heart-seal {
     opacity: 0;
-    transition-delay: 500ms;
-}
-
-/* Animations */
-.envelope.open .card-wrapper {
-    animation: show-card 1000ms 600ms forwards;
-}
-
-.envelope:not(.open) .card-wrapper {
-    animation: hide-card 1000ms forwards;
-}
-
-@keyframes show-card {
-    0% {
-        transform: translateY(0) rotate(-90deg);
-        z-index: -1;
-    }
-    50% {
-        transform: translateY(-75%) rotate(-90deg);
-        z-index: -1;
-    }
-    100% {
-        transform: translateY(-180px) rotate(0deg);
-        z-index: 10;
-    }
-}
-
-@keyframes hide-card {
-    0% {
-        transform: translateY(-180px) rotate(0deg);
-        z-index: 10;
-    }
-    50% {
-        transform: translateY(-75%) rotate(-90deg);
-        z-index: -1;
-    }
-    100% {
-        transform: translateY(0) rotate(-90deg);
-        z-index: -1;
-    }
+    transition-delay: 0ms;
 }
 
 /* Instructions */
@@ -328,6 +271,11 @@ body {
     font-size: clamp(12px, 3.5vw, 14px);
     opacity: 0.8;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s;
+}
+
+.envelope.open ~ .instructions {
+    opacity: 0;
 }
 
 /* Estilo da barra de rolagem no card */
@@ -370,15 +318,6 @@ body {
     
     .instructions {
         bottom: 15px;
-    }
-    
-    /* Ajuste fino para animações em dispositivos móveis */
-    .envelope.open .card {
-        transition-delay: 1000ms;
-    }
-    
-    .envelope.open .card-cover {
-        transition-delay: 1500ms;
     }
 }
 
