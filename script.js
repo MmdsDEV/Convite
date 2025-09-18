@@ -1,45 +1,41 @@
 document.addEventListener('DOMContentLoaded', function() {
     const envelope = document.querySelector('.envelope');
     const instructions = document.querySelector('.instructions');
-    const heartSeal = document.querySelector('.heart-seal');
-    const cardWrapper = document.querySelector('.card-wrapper');
     let isOpen = false;
-    let touchStartTime = 0;
+    let lastClickTime = 0;
     
     // Detectar se é um dispositivo touch
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     
     if (isTouchDevice) {
-        instructions.textContent = "• Toque para abrir a carta";
-    }
-
-    // Função utilitária para resetar animações
-    function resetAnimation(element) {
-        element.style.animation = 'none';
-        void element.offsetWidth;
+        instructions.textContent = "• Toque para abrir/fechar a carta";
+    } else {
+        instructions.textContent = "• Clique para abrir/fechar a carta";
     }
 
     envelope.addEventListener('click', function(e) {
-        // Prevenir clique rápido em dispositivos móveis
+        // Prevenir clique rápido (debounce)
         const currentTime = new Date().getTime();
-        if (currentTime - touchStartTime < 600) return;
+        if (currentTime - lastClickTime < 800) return;
+        lastClickTime = currentTime;
         
         isOpen = !isOpen;
         envelope.classList.toggle('open', isOpen);
-        touchStartTime = currentTime;
-    });
-    
-    // Adicionar evento de clique para a carta sair completamente
-    cardWrapper.addEventListener('click', (e) => {
-        e.stopPropagation();
-        resetAnimation(cardWrapper);
         
-        cardWrapper.style.animation = 'card-exit 1200ms forwards';
+        // Atualizar instruções
+        if (isOpen) {
+            instructions.textContent = isTouchDevice ? 
+                "• Toque para fechar a carta" : 
+                "• Clique para fechar a carta";
+        } else {
+            instructions.textContent = isTouchDevice ? 
+                "• Toque para abrir a carta" : 
+                "• Clique para abrir a carta";
+        }
     });
     
     // Melhorar resposta ao toque
     envelope.addEventListener('touchstart', function(e) {
-        touchStartTime = new Date().getTime();
         e.preventDefault();
     }, { passive: false });
     
@@ -59,81 +55,16 @@ document.addEventListener('DOMContentLoaded', function() {
         lastTouchEnd = now;
     }, false);
     
-    // Adicionar keyframes dinamicamente para a animação de saída
-    const style = document.createElement('style');
-    style.textContent = `
-        @keyframes card-exit {
-            0% {
-                transform: translateY(-180px) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-300px) rotate(-5deg);
-            }
-            100% {
-                transform: translateY(-100vh) rotate(0deg);
-                opacity: 0;
-            }
-        }
-        
-        .card-restore-btn {
-            position: absolute;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            border: 1px solid white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: 100;
-        }
-        
-        .card-restore-btn.show {
-            opacity: 1;
-        }
-    `;
-    document.head.appendChild(style);
-    
-    // Criar botão de restaurar carta
-    const restoreBtn = document.createElement('button');
-    restoreBtn.className = 'card-restore-btn';
-    restoreBtn.textContent = 'Restaurar Carta';
-    document.querySelector('.scene').appendChild(restoreBtn);
-    
-    // Evento para restaurar a carta
-    restoreBtn.addEventListener('click', () => {
-        resetAnimation(cardWrapper);
-        cardWrapper.style.animation = 'hide-card 1000ms forwards';
-        restoreBtn.classList.remove('show');
-        
-        // Esconder o botão após a animação
-        setTimeout(() => {
-            restoreBtn.style.display = 'none';
-        }, 1000);
-    });
-    
-    // Observar o final da animação de saída
-    cardWrapper.addEventListener('animationend', (e) => {
-        if (e.animationName === 'card-exit') {
-            // Mostrar botão de restaurar
-            restoreBtn.style.display = 'block';
-            setTimeout(() => {
-                restoreBtn.classList.add('show');
-            }, 100);
-        }
-    });
-    
-    // Acessibilidade: permitir abrir/restaurar com Enter ou Espaço
-    document.addEventListener('keydown', (e) => {
+    // Acessibilidade: permitir abrir/fechar com Enter ou Espaço
+    envelope.addEventListener('keydown', (e) => {
         if (e.code === 'Enter' || e.code === 'Space') {
-            if (restoreBtn.style.display === 'block') {
-                restoreBtn.click();
-            } else {
-                envelope.click();
-            }
+            e.preventDefault();
+            envelope.click();
         }
     });
+    
+    // Tornar o envelope focável para acessibilidade
+    envelope.setAttribute('tabindex', '0');
+    envelope.setAttribute('role', 'button');
+    envelope.setAttribute('aria-label', 'Abrir carta de convite');
 });
