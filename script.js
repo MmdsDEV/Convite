@@ -1,83 +1,109 @@
-console.clear();
+const envelope = document.querySelector('.envelope');
+const heartSeal = document.querySelector('.heart-seal');
+const cardWrapper = document.querySelector('.card-wrapper');
+let timeoutId;
 
-/* SETUP */
-const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  5000
-);
-camera.position.z = 500;
+// Função utilitária para resetar animações
+function resetAnimation(element) {
+    element.style.animation = 'none';
+    void element.offsetWidth;
+}
 
-const renderer = new THREE.WebGLRenderer();
-renderer.setPixelRatio(window.devicePixelRatio > 1 ? 2 : 1);
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-/* CONTROLS */
-const controlsWebGL = new THREE.OrbitControls(camera, renderer.domElement);
-
-/* PARTICLES */
-// Create a global gsap timeline that contains all tweens
-const tl = gsap.timeline({
-  repeat: -1,
-  yoyo: true
+envelope.addEventListener('mouseover', () => {
+    clearTimeout(timeoutId);
+    heartSeal.style.opacity = 0;
 });
 
-const path = document.querySelector("path");
-const length = path.getTotalLength();
-const vertices = [];
-for (let i = 0; i < length; i += 0.1) {
-  const point = path.getPointAtLength(i);
-  const vector = new THREE.Vector3(point.x, -point.y, 0);
-  vector.x += (Math.random() - 0.5) * 30;
-  vector.y += (Math.random() - 0.5) * 30;
-  vector.z += (Math.random() - 0.5) * 70;
-  vertices.push(vector);
-  // Create a tween for that vector
-  tl.from(vector, {
-      x: 600 / 2, // Center X of the heart
-      y: -552 / 2, // Center Y of the heart
-      z: 0, // Center of the scene
-      ease: "power2.inOut",
-      duration: "random(2, 5)" // Random duration
-    },
-    i * 0.002 // Delay calculated from the distance along the path
-  );
-}
-const geometry = new THREE.BufferGeometry().setFromPoints(vertices);
-const material = new THREE.PointsMaterial( { color: 0xee5282, blending: THREE.AdditiveBlending, size: 3 } );
-const particles = new THREE.Points(geometry, material);
-// Offset the particles in the scene based on the viewbox values
-particles.position.x -= 600 / 2;
-particles.position.y += 552 / 2;
-scene.add(particles);
-
-gsap.fromTo(scene.rotation, {
-  y: -0.2
-}, {
-  y: 0.2,
-  repeat: -1,
-  yoyo: true,
-  ease: 'power2.inOut',
-  duration: 3
+envelope.addEventListener('mouseout', () => {
+    timeoutId = setTimeout(() => {
+        heartSeal.style.opacity = 1;
+    }, 1500); 
 });
 
-/* RENDERING */
-function render() {
-  requestAnimationFrame(render);
-  // Update the geometry from the animated vertices
-  geometry.setFromPoints(vertices);
-  renderer.render(scene, camera);
-}
+heartSeal.style.transition = 'opacity 0.3s ease';
 
-/* EVENTS */
-function onWindowResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
-}
-window.addEventListener("resize", onWindowResize, false);
+// Adicionar evento de clique para a carta sair completamente
+cardWrapper.addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetAnimation(cardWrapper);
+    
+    cardWrapper.style.animation = 'card-exit 1200ms forwards';
+});
 
-requestAnimationFrame(render);
+// Adicionar keyframes dinamicamente para a animação de saída
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes card-exit {
+        0% {
+            transform: translateY(-180px) rotate(0deg);
+        }
+        50% {
+            transform: translateY(-300px) rotate(-5deg);
+        }
+        100% {
+            transform: translateY(-100vh) rotate(0deg);
+            opacity: 0;
+        }
+    }
+    
+    .card-restore-btn {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.5s ease;
+        z-index: 100;
+    }
+    
+    .card-restore-btn.show {
+        opacity: 1;
+    }
+`;
+document.head.appendChild(style);
+
+// Criar botão de restaurar carta
+const restoreBtn = document.createElement('button');
+restoreBtn.className = 'card-restore-btn';
+restoreBtn.textContent = 'Restaurar Carta';
+document.querySelector('.scene').appendChild(restoreBtn);
+
+// Evento para restaurar a carta
+restoreBtn.addEventListener('click', () => {
+    resetAnimation(cardWrapper);
+    cardWrapper.style.animation = 'hide-card 1000ms forwards';
+    restoreBtn.classList.remove('show');
+    
+    // Esconder o botão após a animação
+    setTimeout(() => {
+        restoreBtn.style.display = 'none';
+    }, 1000);
+});
+
+// Observar o final da animação de saída
+cardWrapper.addEventListener('animationend', (e) => {
+    if (e.animationName === 'card-exit') {
+        // Mostrar botão de restaurar
+        restoreBtn.style.display = 'block';
+        setTimeout(() => {
+            restoreBtn.classList.add('show');
+        }, 100);
+    }
+});
+
+// Acessibilidade: permitir abrir/restaurar com Enter ou Espaço
+document.addEventListener('keydown', (e) => {
+    if (e.code === 'Enter' || e.code === 'Space') {
+        if (restoreBtn.style.display === 'block') {
+            restoreBtn.click();
+        } else {
+            cardWrapper.click();
+        }
+    }
+});
