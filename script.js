@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const cardWrapper = document.querySelector('.card-wrapper');
     let isOpen = false;
     let touchStartTime = 0;
-    let timeoutId;
     
     // Detectar se é um dispositivo touch
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
@@ -19,19 +18,6 @@ document.addEventListener('DOMContentLoaded', function() {
         element.style.animation = 'none';
         void element.offsetWidth;
     }
-
-    envelope.addEventListener('mouseover', () => {
-        clearTimeout(timeoutId);
-        heartSeal.style.opacity = 0;
-    });
-
-    envelope.addEventListener('mouseout', () => {
-        timeoutId = setTimeout(() => {
-            heartSeal.style.opacity = 1;
-        }, 1500); 
-    });
-
-    heartSeal.style.transition = 'opacity 0.3s ease';
 
     envelope.addEventListener('click', function(e) {
         // Prevenir clique rápido em dispositivos móveis
@@ -146,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (restoreBtn.style.display === 'block') {
                 restoreBtn.click();
             } else {
-                cardWrapper.click();
+                envelope.click();
             }
         }
     });
