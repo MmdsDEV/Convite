@@ -7,9 +7,8 @@
 }
 
 body {
-    background-image: url("mj.jpg");
     font-family: "Roboto", sans-serif;
-    background: (135deg, #32309200 0%, #1a1a4a00 100%);
+    background: url("mj.jpg") center center/cover no-repeat fixed;
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -341,3 +340,4 @@ body {
     background: #9370db;
     border-radius: 10px;
 }
+
