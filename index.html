@@ -44,21 +44,9 @@
             </div>
             <div class="heart-seal"></div>
         </div>
-        <div class="instructions">• Abra a carta</div>
+        <div class="instructions">• Toque para abrir a carta</div>
     </div>
 
     <script src="script.js"></script>
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const envelope = document.querySelector('.envelope');
-    let isOpen = false;
-
-    envelope.addEventListener('click', function(e) {
-        // Evita duplo clique rápido em mobile
-        isOpen = !isOpen;
-        envelope.classList.toggle('open', isOpen);
-    });
-});
-</script>
 </body>
 </html>
